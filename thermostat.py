@@ -37,8 +37,8 @@ def shutdown_session(exception=None):
 
 @app.route('/')
 def hello_world():
-	temperatures = Temperature.query.all()
-	return render_template('index.html', temperatures=temperatures)
+	temperatures = Temperature.query.order_by("date").limit(5).all()
+	return render_template('index.html', temperatures=temperatures, count=len(temperatures))
 
 @app.route('/new-temperature')
 def new_temperature():
