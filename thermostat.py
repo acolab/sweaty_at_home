@@ -1,5 +1,6 @@
 from flask import Flask
 from flask import request
+from flask import abort, redirect, url_for
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
@@ -9,7 +10,7 @@ import datetime
 from flask import render_template
 
 
-engine = create_engine('sqlite:///thermostat.sqlite', convert_unicode=True)
+engine = create_engine('sqlite:///thermostat.sqlite', convert_unicode=True, echo=True)
 db_session = scoped_session(sessionmaker(autocommit=False,
                                          autoflush=False,
                                          bind=engine))
@@ -27,7 +28,22 @@ class Temperature(Base):
 		return "<Temperature(date='%s', temperature='%s'>" % (
                              self.date, self.temperature)
 
+class Settings(Base):
+	__tablename__ = 'settings'
+
+	id = Column(Integer, primary_key=True)
+	target_temperature = Column(Float)
+
+
 Base.metadata.create_all(bind=engine)
+
+settings = Settings.query.first()
+if settings == None:
+	settings = Settings(target_temperature=20)
+	db_session.add(settings)
+	db_session.commit()
+	
+print repr(settings)
 
 app = Flask(__name__)
 
@@ -36,9 +52,10 @@ def shutdown_session(exception=None):
     db_session.remove()
 
 @app.route('/')
-def hello_world():
+def index():
+	settings = Settings.query.first()
 	temperatures = Temperature.query.order_by("date").limit(5).all()
-	return render_template('index.html', temperatures=temperatures, count=len(temperatures))
+	return render_template('index.html', temperatures=temperatures, count=len(temperatures), settings=settings)
 
 @app.route('/new-temperature')
 def new_temperature():
@@ -46,6 +63,13 @@ def new_temperature():
 	db_session.add(temperature)
 	db_session.commit()
 	return str(temperature.id)
+
+@app.route('/set-target')
+def set_target():
+	settings = Settings.query.first()
+	settings.target_temperature = request.args.get("target")
+	db_session.commit()
+	return redirect(url_for('index'))
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', debug=True)

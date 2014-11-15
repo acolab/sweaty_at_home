@@ -1,5 +1,11 @@
 <!doctype html>
 <title>Thermostat</title>
+<form action="/set-target">
+<p>
+Temperature cible: <input name="target" value="{{settings.target_temperature}}">
+<input type=submit>
+</p>
+
 <p>{{ count }} dernières temperatures</p>
 <table border=1>
 {% for temperature in temperatures %}
