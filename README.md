@@ -8,30 +8,31 @@ Create a connected thermostat able to pilot a boiler (on/off) and electronic hea
 Hardware
 --------
 ### Server
-Raspberry Pi
-433 Mhz receiver
+- Raspberry Pi
+- 433 Mhz receiver
 
 ### Thermal sensor
-Arduino
-Digital Thermometer : DS18B20
-433 Mhz emetter
+- Arduino
+- Digital Thermometer : DS18B20
+- 433 Mhz emetter
 
 Software
 --------
 ### Arduino
-OneWire Library
-VirtualWire Library
+- OneWire Library
+- VirtualWire Library
 
 ### Rapsberry
-Flask : phyton web framework
-SQLite
-SQLalchemy
-Python
-PiGPIO : http://abyz.co.uk/rpi/pigpio/index.html
+- Flask : phyton web framework
+- SQLite
+- SQLalchemy
+- Python
+- PiGPIO : http://abyz.co.uk/rpi/pigpio/index.html
 
 Requirements
 ------------
 Package      | Version
+-------------|---------
 Flask        | 0.10.1
 Jinja2       | 2.7.3
 MarkupSafe   | 0.23
@@ -45,14 +46,14 @@ wsgiref      | 0.1.2
 
 Functionnality
 --------------
-- Read temperature from remote sensor through RF
-- Set hysteresis for Temperature regulation
-- Pilot boiler through relay
-- Pilot Electric heater through optotriac
+- [x] Read temperature from remote sensor through RF
+- [x] Set hysteresis for Temperature regulation
+- [ ] Pilot boiler through relay
+- [ ] Pilot Electric heater through optotriac
 
 ### Web Interface
-- Set Temperature
-- Graph logged T°
+- [ ] Set Temperature
+- [ ] Graph logged T°
 
 Install
 -------
@@ -64,7 +65,16 @@ Thermometer : pin 2
 RF Emetter : pin 12
 
 ### Raspberry
-Install
-python-sqlachemy, python-pip, python-flask
-
-PiGPIO : http://abyz.co.uk/rpi/pigpio/download.html
+On top of a vanilla version of Raspbian, install
+```
+sudo apt-get update
+sudo apt-get install python-sqlachemy python-pip python-flask
+```
+Download and Install PiGPIO : http://abyz.co.uk/rpi/pigpio/download.html
+```
+wget abyz.co.uk/rpi/pigpio/pigpio.zip
+unzip pigpio.zip
+cd PIGPIO
+make
+make install
+```
