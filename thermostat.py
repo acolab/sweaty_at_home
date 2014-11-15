@@ -37,15 +37,18 @@ class Settings(Base):
 	spread = Column(Float)
 
 pi = pigpio.pi()
-pi.set_mode(17, pigpio.OUTPUT)
 
 class Heater(Base):
 	__tablename__ = 'heaters'
 	id = Column(Integer, primary_key=True)
 	state = Column(Integer)
+	pin = Column(Integer)
 
 	OFF = 0
 	ON = 1
+
+	def setup(self):
+		pi.set_mode(self.pin, pigpio.OUTPUT)
 
 	def active(self):
 		if self.state == Heater.ON:
@@ -54,19 +57,19 @@ class Heater(Base):
 			return False
 
 	def activate(self):
-		print "activating heater"
+		print "Activating heater"
 		self.state = Heater.ON
 		db_session.commit()
-		pi.write(17, 1)
+		pi.write(self.pin, 1)
 	
 	def deactivate(self):
-		print "deactivating heater"
+		print "Deactivating heater"
 		self.state = Heater.OFF
 		db_session.commit()
-		pi.write(17, 0)
+		pi.write(self.pin, 0)
 
 	def hold(self):
-		print "holding heater"
+		print "Holding heater"
 
 Base.metadata.create_all(bind=engine)
 
@@ -75,20 +78,19 @@ if settings == None:
 	settings = Settings(target_temperature=20, spread=0.5)
 	db_session.add(settings)
 	db_session.commit()
-	
+print repr(settings)
+
 heater = Heater.query.first()
 if heater == None:
-	heater = Heater(state = Heater.OFF)
+	heater = Heater(state=Heater.OFF, pin=17)
 	db_session.add(heater)
 	db_session.commit()
 	
-print repr(settings)
-
 app = Flask(__name__)
 
 @app.teardown_appcontext
 def shutdown_session(exception=None):
-    db_session.remove()
+	db_session.remove()
 
 @app.route('/')
 def index():
@@ -103,7 +105,7 @@ def new_temperature():
 	db_session.add(temperature)
 	db_session.commit()
 	update_thermostat()
-	return "ok"
+	return "Temperature saved: {temp}".format(temp=temperature.temperature)
 
 @app.route('/set-target')
 def set_target():
@@ -127,7 +129,6 @@ def update_thermostat():
 		heater.deactivate()
 	else:
 		heater.hold()
-	
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', debug=True)
