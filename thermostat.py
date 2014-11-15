@@ -33,14 +33,47 @@ class Settings(Base):
 
 	id = Column(Integer, primary_key=True)
 	target_temperature = Column(Float)
+	spread = Column(Float)
 
+class Heater(Base):
+	__tablename__ = 'heaters'
+	id = Column(Integer, primary_key=True)
+	state = Column(Integer)
+
+	OFF = 0
+	ON = 1
+
+	def active(self):
+		if self.state == Heater.ON:
+			return True
+		else:
+			return False
+
+	def activate(self):
+		print "activating heater"
+		self.state = Heater.ON
+		db_session.commit()
+	
+	def deactivate(self):
+		print "deactivating heater"
+		self.state = Heater.OFF
+		db_session.commit()
+
+	def hold(self):
+		print "holding heater"
 
 Base.metadata.create_all(bind=engine)
 
 settings = Settings.query.first()
 if settings == None:
-	settings = Settings(target_temperature=20)
+	settings = Settings(target_temperature=20, spread=0.5)
 	db_session.add(settings)
+	db_session.commit()
+	
+heater = Heater.query.first()
+if heater == None:
+	heater = Heater(state = Heater.OFF)
+	db_session.add(heater)
 	db_session.commit()
 	
 print repr(settings)
@@ -54,22 +87,41 @@ def shutdown_session(exception=None):
 @app.route('/')
 def index():
 	settings = Settings.query.first()
-	temperatures = Temperature.query.order_by("date").limit(5).all()
-	return render_template('index.html', temperatures=temperatures, count=len(temperatures), settings=settings)
+	temperatures = Temperature.query.order_by("date DESC").limit(5).all()
+	heater = Heater.query.first()
+	return render_template('index.html', temperatures=temperatures, count=len(temperatures), settings=settings, heater=heater)
 
-@app.route('/new-temperature')
+@app.route('/new-temperature', methods=['POST'])
 def new_temperature():
-	temperature = Temperature(temperature=request.args.get("value"), date=datetime.datetime.now())
+	temperature = Temperature(temperature=request.form["value"], date=datetime.datetime.now())
 	db_session.add(temperature)
 	db_session.commit()
-	return str(temperature.id)
+	update_thermostat()
+	return "ok"
 
 @app.route('/set-target')
 def set_target():
 	settings = Settings.query.first()
 	settings.target_temperature = request.args.get("target")
 	db_session.commit()
+	update_thermostat()
 	return redirect(url_for('index'))
+
+def update_thermostat():
+	temperature = Temperature.query.order_by("date DESC").first()
+	settings = Settings.query.first()
+	actual = temperature.temperature
+	target = settings.target_temperature
+	spread = settings.spread
+	heater = Heater.query.first()
+	print [actual, target, spread]
+	if actual < target - spread:
+		heater.activate()
+	elif actual > target + spread:
+		heater.deactivate()
+	else:
+		heater.hold()
+	
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', debug=True)

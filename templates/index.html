@@ -5,7 +5,7 @@
 Temperature cible: <input name="target" value="{{settings.target_temperature}}">
 <input type=submit>
 </p>
-
+<p>Chauffage : {{ "Allumé" if heater.active() else "Éteint" }}</p>
 <p>{{ count }} dernières temperatures</p>
 <table border=1>
 {% for temperature in temperatures %}
