@@ -125,6 +125,8 @@ def set_target():
 
 def update_thermostat():
 	temperature = Temperature.query.order_by("date DESC").first()
+        if temperature == None:
+            return
 	settings = Settings.query.first()
 	actual = temperature.temperature
 	target = settings.target_temperature
