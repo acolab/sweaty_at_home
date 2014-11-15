@@ -8,8 +8,12 @@ from sqlalchemy import Column, Integer, String, Float, DateTime
 from sqlalchemy.orm import sessionmaker
 import datetime
 from flask import render_template
-import pigpio
 
+try:
+    import pigpio
+    PI = True
+except ImportError:
+    PI = False
 
 engine = create_engine('sqlite:///thermostat.sqlite', convert_unicode=True, echo=True)
 db_session = scoped_session(sessionmaker(autocommit=False,
@@ -36,7 +40,8 @@ class Settings(Base):
 	target_temperature = Column(Float)
 	spread = Column(Float)
 
-pi = pigpio.pi()
+if PI:
+    pi = pigpio.pi()
 
 class Heater(Base):
 	__tablename__ = 'heaters'
@@ -48,7 +53,8 @@ class Heater(Base):
 	ON = 1
 
 	def setup(self):
-		pi.set_mode(self.pin, pigpio.OUTPUT)
+                if PI:
+                    pi.set_mode(self.pin, pigpio.OUTPUT)
 
 	def active(self):
 		if self.state == Heater.ON:
@@ -60,13 +66,15 @@ class Heater(Base):
 		print "Activating heater"
 		self.state = Heater.ON
 		db_session.commit()
-		pi.write(self.pin, 1)
-	
+                if PI:
+                    pi.write(self.pin, 1)
+            
 	def deactivate(self):
 		print "Deactivating heater"
 		self.state = Heater.OFF
 		db_session.commit()
-		pi.write(self.pin, 0)
+                if PI:
+                    pi.write(self.pin, 0)
 
 	def hold(self):
 		print "Holding heater"
