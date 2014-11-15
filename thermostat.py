@@ -123,6 +123,20 @@ def set_target():
 	update_thermostat()
 	return redirect(url_for('index'))
 
+@app.route('/', defaults={'path': ''})
+@app.route('/<path:path>')
+def get_resource(path):
+    mimetypes = {
+        ".css": "text/css",
+        ".html": "text/html",
+        ".js": "application/javascript",
+    }
+    complete_path = os.path.join(root_dir(), path)
+    ext = os.path.splitext(path)[1]
+    mimetype = mimetypes.get(ext, "text/html")
+    content = get_file(complete_path)
+    return Response(content, mimetype=mimetype)
+
 def update_thermostat():
 	temperature = Temperature.query.order_by("date DESC").first()
         if temperature == None:
@@ -139,6 +153,7 @@ def update_thermostat():
 		heater.deactivate()
 	else:
 		heater.hold()
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', debug=True)

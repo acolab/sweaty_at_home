@@ -1,13 +1,39 @@
-<!doctype html>
-<title>Thermostat</title>
-<form action="/set-target">
-<p>
-Temperature cible: <input name="target" value="{{settings.target_temperature}}">
-<input type=submit>
-</p>
-<p>Chauffage : {{ "Allumé" if heater.active() else "Éteint" }}</p>
-<p>{{ count }} dernières temperatures</p>
-<table border=1>
-{% for temperature in temperatures %}
-  <tr><td>{{temperature.date}}</td><td>{{temperature.temperature}}</td></tr>
-{% endfor %}
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <title></title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+        <style>
+            body {
+                padding-top: 50px;
+                padding-bottom: 20px;
+            }
+        </style>
+        <link rel="stylesheet" href="/static/css/bootstrap-theme.min.css">
+        <link rel="stylesheet" href="/static/css/main.css">
+
+        <script src="/static/js/vendor/modernizr-2.6.2-respond-1.1.0.min.js"></script>
+    </head>
+    <body>
+    <title>Thermostat</title>
+    <form class="form-inline" action="/set-target">
+        <p>
+            Temperature cible: <input class="form-control" name="target" value="{{settings.target_temperature}}">
+            <input class="btn btn-default" type=submit>
+        </p>
+        <p>Chauffage : {{ "Allumé" if heater.active() else "Éteint" }}</p>
+        <p>{{ count }} dernières temperatures</p>
+        <table class="table">
+            {% for temperature in temperatures %}
+              <tr><td>{{temperature.date}}</td><td>{{temperature.temperature}}</td></tr>
+            {% endfor %}
+        </table>
+    </body>
