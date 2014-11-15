@@ -12,7 +12,7 @@ Hardware
 - 433 Mhz receiver
 
 ### Thermal sensor
-- Arduino
+- Arduino Uno
 - Digital Thermometer : DS18B20
 - 433 Mhz emetter
 
