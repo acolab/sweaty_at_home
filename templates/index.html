@@ -1,0 +1,6 @@
+<!doctype html>
+<title>Hello from Flask</title>
+<table border=1>
+{% for temperature in temperatures %}
+  <tr><td>{{temperature.date}}</td><td>{{temperature.temperature}}</td></tr>
+{% endfor %}
