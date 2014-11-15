@@ -31,15 +31,16 @@ PiGPIO : http://abyz.co.uk/rpi/pigpio/index.html
 
 Requirements
 ------------
-Flask==0.10.1
-Jinja2==2.7.3
-MarkupSafe==0.23
-SQLAlchemy==0.9.8
-Werkzeug==0.9.6
-argparse==1.2.1
-distribute==0.6.24
-itsdangerous==0.24
-wsgiref==0.1.2
+Package      | Version
+Flask        | 0.10.1
+Jinja2       | 2.7.3
+MarkupSafe   | 0.23
+SQLAlchemy   | 0.9.8
+Werkzeug     | 0.9.6
+argparse     | 1.2.1
+distribute   | 0.6.24
+itsdangerous | 0.24
+wsgiref      | 0.1.2
 
 
 Functionnality
