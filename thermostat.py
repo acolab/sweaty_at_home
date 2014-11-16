@@ -123,6 +123,17 @@ def set_target():
 	update_thermostat()
 	return redirect(url_for('index'))
 
+@app.route('/lcd')
+def lcd():
+    temperature = Temperature.query.order_by("date DESC").first()
+    if temperature == None:
+        return
+    settings = Settings.query.first()
+    actual = temperature.temperature
+    target = settings.target_temperature
+    return "Temperature: {temp}".format(temp=actual)
+    
+
 @app.route('/', defaults={'path': ''})
 @app.route('/<path:path>')
 def get_resource(path):
