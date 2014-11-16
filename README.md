@@ -10,7 +10,7 @@ Hardware
 ### Server
 - Raspberry Pi
 - 433 Mhz receiver
-- LCD Screen 2x20 Characters
+- LCD Screen 2x20 Characters PC2002LRS-A
 
 ### Thermal sensor
 - Arduino Uno
@@ -44,6 +44,38 @@ argparse     | 1.2.1
 distribute   | 0.6.24
 itsdangerous | 0.24
 wsgiref      | 0.1.2
+
+LCD Wiring
+----------
+```
+Connector
+16 - 15 [-------------------------------------------]
+14 - 13 [                                           ]
+12 - 11 [                                           ]
+10 - 9  [                                           ]
+ 8 - 7  [                                           ]
+ 6 - 5  [                                           ]
+ 4 - 3  [                                           ]
+ 2 - 1  [-------------------------------------------]
+```
+PC2002  |   Signal  |  Couleur    | Rasp
+--------|-----------|-------------|--------------
+1       |    VSS    |     Marron  |    GND
+2       |    VDD    |     Rouge   |    +5V
+3       |    Vo     |             |    LCD Contrast
+4       |    RS     |     Orange  |    GPIO 7
+5       |    R/!W   |             |    GND
+6       |    Enable |     Jaune   |    GPIO 8
+7       |    DB0    |             |    -
+8       |    DB1    |             |    -
+9       |    DB2    |             |    -
+10      |    DB3    |             |    -
+11      |    DB4    |     Vert    |    GPIO 25
+12      |    DB5    |     Bleu    |    GPIO 24
+13      |    DB6    |     Violet  |    GPIO 23
+14      |    DB7    |     Gris    |    GPIO 18
+15      |    Anode  |     Blanc   |    +30mA (3V)
+16      |    Cathode|             |    GND
 
 
 Functionnality
