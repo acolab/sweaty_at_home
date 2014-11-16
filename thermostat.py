@@ -8,6 +8,7 @@ from sqlalchemy import Column, Integer, String, Float, DateTime
 from sqlalchemy.orm import sessionmaker
 import datetime
 from flask import render_template
+from random import randrange
 
 try:
     import pigpio
@@ -123,15 +124,28 @@ def set_target():
 	update_thermostat()
 	return redirect(url_for('index'))
 
+fire = 0
 @app.route('/lcd')
 def lcd():
+    global fire
     temperature = Temperature.query.order_by("date DESC").first()
     if temperature == None:
         return
     settings = Settings.query.first()
     actual = temperature.temperature
     target = settings.target_temperature
-    return "Temperature: {temp}".format(temp=actual)
+    str =  "Actuelle : %4.1f \xdfC\n" % actual
+    str += "Consigne : %4.1f \xdfC" % settings.target_temperature
+    heater = Heater.query.first()
+    if heater.active():
+        if fire == 0:
+            str += " \xc2"
+        else:
+            str += " \xaf"
+        fire = (fire + 1) % 2
+    else:
+        str += " \x2a"
+    return str
     
 
 @app.route('/', defaults={'path': ''})
