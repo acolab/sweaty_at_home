@@ -134,8 +134,8 @@ def lcd():
     settings = Settings.query.first()
     actual = temperature.temperature
     target = settings.target_temperature
-    str =  "Actuelle : %4.1f \xdfC\n" % actual
-    str += "Consigne : %4.1f \xdfC" % settings.target_temperature
+    str =  "Actuelle :% 4.1f \xdfC\n" % actual
+    str += "Consigne :% 4.1f \xdfC" % settings.target_temperature
     heater = Heater.query.first()
     if heater.active():
         if fire == 0:
