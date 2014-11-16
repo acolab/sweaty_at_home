@@ -29,7 +29,7 @@ Software
 - SQLalchemy
 - Python
 - [PiGPIO](http://abyz.co.uk/rpi/pigpio/index.html)
-- Custom LCD Lib from [zem.fr](http://www.zem.fr/raspberry-pi-et-afficheur-lcd-hitachi-hd44780-1602-part-2/])
+- Custom LCD Lib from [zem.fr](http://www.zem.fr/raspberry-pi-et-afficheur-lcd-hitachi-hd44780-1602-part-2/)
 
 Requirements
 ------------
