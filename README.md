@@ -94,9 +94,12 @@ Install
 -------
 ### Arduino
 Download and upload the Arduino sektch into an Arduino board.
+
+#### Arduino pin out
 10k Pull-up resistor between +5V and Data
-Arduino pin out
-Thermometer : pin 2
+
+DS18B20 (data pin) : pin 2
+
 RF Emetter : pin 12
 
 ### Raspberry
