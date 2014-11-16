@@ -10,6 +10,7 @@ Hardware
 ### Server
 - Raspberry Pi
 - 433 Mhz receiver
+- LCD Screen 2x20 Characters
 
 ### Thermal sensor
 - Arduino Uno
@@ -27,7 +28,8 @@ Software
 - SQLite
 - SQLalchemy
 - Python
-- PiGPIO : http://abyz.co.uk/rpi/pigpio/index.html
+- [PiGPIO](http://abyz.co.uk/rpi/pigpio/index.html)
+- Custom LCD Lib from [zem.fr](http://www.zem.fr/raspberry-pi-et-afficheur-lcd-hitachi-hd44780-1602-part-2/])
 
 Requirements
 ------------
@@ -48,6 +50,7 @@ Functionnality
 --------------
 - [x] Read temperature from remote sensor through RF
 - [x] Set hysteresis for Temperature regulation
+- [x] Display current temperature on LCD
 - [ ] Pilot boiler through relay
 - [ ] Pilot Electric heater through optotriac
 
