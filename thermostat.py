@@ -97,10 +97,6 @@ if heater == None:
 	
 app = Flask(__name__)
 
-@app.teardown_appcontext
-def shutdown_session(exception=None):
-	db_session.remove()
-
 @app.route('/')
 def index():
 	settings = Settings.query.first()
