@@ -106,7 +106,7 @@ RF Emetter : pin 12
 On top of a vanilla version of Raspbian, install
 ```
 sudo apt-get update
-sudo apt-get install python-sqlalchemy python-pip python-flask
+sudo apt-get install python-sqlalchemy python-flask
 ```
 Download and Install PiGPIO : http://abyz.co.uk/rpi/pigpio/download.html
 ```
