@@ -1,6 +1,9 @@
 #include <OneWire.h>
 #include <VirtualWire.h>
 
+//#define Debug // Uncomment to debug via serial
+
+
 OneWire  ds(2);  // Thermal sensor data pin (With a pull_up resistor)
 const int transmit_pin = 12; // RF Emitter pin
 char msg[2]; /* Char table sent by the Arduino (or
@@ -9,7 +12,9 @@ char msg[2]; /* Char table sent by the Arduino (or
 int ambiante; // Temp that will be sent to the Raspberry Pi
 
 void setup() {
+#ifdef Debug
   Serial.begin(9600); // Debug only
+#endif
   vw_set_tx_pin(transmit_pin); // RF pin setup
   vw_setup(2000); // RF speed (in bauds per second)
 }
@@ -23,34 +28,48 @@ void loop() {
   float celsius/*, fahrenheit*/;
   
   if ( !ds.search(addr)) {
+#ifdef Debug
     Serial.println();
+#endif
     ds.reset_search();
     delay(250);
     return;
   }
   
   if (OneWire::crc8(addr, 7) != addr[7]) {
-      Serial.println("CRC is not valid!");
+#ifdef Debug
+    Serial.println("CRC is not valid!");
+#endif
       return;
   }
+#ifdef Debug
   Serial.println();
+ #endif
  
   // the first ROM byte indicates which chip
   switch (addr[0]) {
     case 0x10:
-     Serial.println("  Chip = DS18S20");  // or old DS1820
+#ifdef Debug
+      Serial.println("  Chip = DS18S20");  // or old DS1820
+#endif
       type_s = 1;
       break;
     case 0x28:
+#ifdef Debug
       Serial.println("  Chip = DS18B20");
+#endif
       type_s = 0;
       break;
     case 0x22:
+#ifdef Debug
       Serial.println("  Chip = DS1822");
+#endif
       type_s = 0;
       break;
     default:
+#ifdef Debug
       Serial.println("Device is not a DS18x20 family device.");
+#endif
       return;
   } 
 
@@ -90,9 +109,11 @@ void loop() {
   }
   celsius = (float)raw / 16.0;
 
+#ifdef Debug
   Serial.print("  Temperature = ");
   Serial.print(celsius);
   Serial.print(" Celsius, ");
+#endif
   
 //  Modify the temperature value to make it sendable through VirtualWire
   ambiante = (int)(100*celsius);
