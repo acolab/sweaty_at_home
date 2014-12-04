@@ -145,6 +145,9 @@ def lcd():
     return str
     
 
+def root_dir():  # pragma: no cover
+    return os.path.abspath(os.path.dirname(__file__))
+
 @app.route('/', defaults={'path': ''})
 @app.route('/<path:path>')
 def get_resource(path):
