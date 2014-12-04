@@ -6,7 +6,7 @@
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-        <title></title>
+	<title>Thermostat</title>
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
@@ -23,12 +23,13 @@
         <script src="/static/js/vendor/modernizr-2.6.2-respond-1.1.0.min.js"></script>
     </head>
     <body>
-    <title>Thermostat</title>
+    <div class="container">
     <form class="form-inline" action="/set-target">
         <p>
             Temperature cible: <input class="form-control" name="target" value="{{settings.target_temperature}}">
             <input class="btn btn-default" type=submit>
         </p>
+    </form>
         <p>Chauffage : {{ "Allumé" if heater.active() else "Éteint" }}</p>
         <p>{{ count }} dernières temperatures</p>
         <table class="table">
@@ -36,4 +37,5 @@
               <tr><td>{{temperature.date}}</td><td>{{temperature.temperature}}</td></tr>
             {% endfor %}
         </table>
+    </div>
     </body>
