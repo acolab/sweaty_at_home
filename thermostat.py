@@ -117,6 +117,7 @@ def new_temperature():
 def set_target():
 	settings = Settings.query.first()
 	settings.target_temperature = request.args.get("target")
+	settings.spread = request.args.get("spread")
 	db_session.commit()
 	update_thermostat()
 	return redirect(url_for('index'))
