@@ -66,6 +66,9 @@ class Heater(Base):
 
     def activate(self):
         print "Activating heater"
+        if self.state != Heater.ON:
+            change = HeaterStateChange(heater_id=self.id, state=Heater.ON, date=datetime.datetime.now())
+            db_session.add(change)
         self.state = Heater.ON
         db_session.commit()
         if PI:
@@ -73,6 +76,9 @@ class Heater(Base):
             
     def deactivate(self):
         print "Deactivating heater"
+        if self.state != Heater.OFF:
+            change = HeaterStateChange(heater_id=self.id, state=Heater.OFF, date=datetime.datetime.now())
+            db_session.add(change)
         self.state = Heater.OFF
         db_session.commit()
         if PI:
@@ -80,6 +86,15 @@ class Heater(Base):
 
     def hold(self):
         print "Holding heater"
+
+
+class HeaterStateChange(Base):
+	__tablename__ = 'heater_state_changes'
+	id = Column(Integer, primary_key=True)
+	heater_id = Column(Integer)
+	date = Column(DateTime)
+	state = Column(Integer)
+
 
 Base.metadata.create_all(bind=engine)
 
