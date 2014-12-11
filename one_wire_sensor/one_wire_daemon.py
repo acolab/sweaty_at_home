@@ -5,12 +5,13 @@ import time, struct
 import urllib
 import sys
 
-if len(sys.argv) != 2:
-    print "usage: python one_wire_daemon.py <sensor file>"
-    print "example: python one_wire_daemon.py /sys/bus/w1/devices/28-000005fbb5db/w1_slave"
+if len(sys.argv) != 3:
+    print "usage: python one_wire_daemon.py <sensor file> <server url>"
+    print "example: python one_wire_daemon.py /sys/bus/w1/devices/28-000005fbb5db/w1_slave http://localhost:5000/new-temperature"
     sys.exit(1)
 
 sensor_path = sys.argv[1]
+server_url = sys.argv[2]
 
 while True:
     f = open(sensor_path)
@@ -28,7 +29,7 @@ while True:
 
                 try:
                     params = urllib.urlencode({'value': temperature})
-                    f = urllib.urlopen("http://localhost:5000/new-temperature", params)
+                    f = urllib.urlopen(server_url, params)
                     print "Server response: {response}".format(response=f.read())
                 except Exception,e:
                     print str(e)

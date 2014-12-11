@@ -132,3 +132,10 @@ sudo service apache2 reload
 ```
 
 Then connect to http://raspberrypi.local/.
+
+If you use the one wire sensor directly connected to the pi, install the daemon:
+```
+sudo cp init.d/one_wire_sensor /etc/init.d/
+sudo update-rc.d one_wire_sensor defaults
+sudo service one_wire_sensor start
+```
