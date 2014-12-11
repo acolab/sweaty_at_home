@@ -106,7 +106,7 @@ RF Emetter : pin 12
 On top of a vanilla version of Raspbian, install
 ```
 sudo apt-get update
-sudo apt-get install python-sqlalchemy python-flask
+sudo apt-get install python-sqlalchemy python-flask apache2 libapache2-mod-wsgi git avahi-daemon
 ```
 Download and Install PiGPIO : http://abyz.co.uk/rpi/pigpio/download.html
 ```
@@ -114,5 +114,21 @@ wget abyz.co.uk/rpi/pigpio/pigpio.zip
 unzip pigpio.zip
 cd PIGPIO
 make
-make install
+sudo make install
+cd ..
 ```
+
+Get sweaty@home and install it:
+```
+git clone https://github.com/acolab/sweaty_at_home.git
+cd sweaty_at_home
+sudo cp init.d/pigpiod /etc/init.d/pigpiod
+sudo update-rc.d pigpiod defaults
+sudo service pigpiod start
+sudo cp apache_config /etc/apache2/sites-available/sweaty_at_home
+sudo a2ensite sweaty_at_home
+sudo a2dissite default default_ssl
+sudo service apache2 reload
+```
+
+Then connect to http://raspberrypi.local/.

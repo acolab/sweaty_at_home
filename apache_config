@@ -1,0 +1,11 @@
+<VirtualHost *:80>
+    WSGIDaemonProcess sweaty_at_home user=pi group=pi threads=5
+    WSGIScriptAlias / /home/pi/sweaty_at_home/sweaty_at_home.wsgi
+
+    <Directory /home/pi/sweaty_at_home>
+        WSGIProcessGroup sweaty_at_home
+        WSGIApplicationGroup %{GLOBAL}
+        Order deny,allow
+        Allow from all
+    </Directory>
+</VirtualHost>

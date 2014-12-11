@@ -17,7 +17,7 @@ try:
 except ImportError:
     PI = False
 
-engine = create_engine('sqlite:///thermostat.sqlite', convert_unicode=True, echo=True)
+engine = create_engine('sqlite:///thermostat.sqlite', convert_unicode=True, echo=False)
 db_session = scoped_session(sessionmaker(autocommit=False,
                                          autoflush=False,
                                          bind=engine))
