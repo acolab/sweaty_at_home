@@ -4,9 +4,10 @@ from flask import abort, redirect, url_for
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column, Integer, String, Float, DateTime
+from sqlalchemy import Column, Integer, String, Float, DateTime, Boolean, Time
 from sqlalchemy.orm import sessionmaker
 import datetime
+import time
 from flask import render_template
 from random import randrange
 import os
@@ -34,6 +35,21 @@ class Temperature(Base):
     def __repr__(self):
         return "<Temperature(date='%s', temperature='%s'>" % (
                              self.date, self.temperature)
+
+class Schedule(Base):
+    __tablename__ = 'schedule'
+
+    id = Column(Integer, primary_key=True)
+    start_time = Column(Time)
+    end_time = Column(Time)
+    monday = Column(Boolean, default = False)
+    tuesday = Column(Boolean, default = False)
+    wednesday = Column(Boolean, default = False)
+    thursday = Column(Boolean, default = False)
+    friday = Column(Boolean, default = False)
+    saturday = Column(Boolean, default = False)
+    sunday = Column(Boolean, default = False)
+
 
 class Settings(Base):
     __tablename__ = 'settings'
@@ -136,6 +152,32 @@ def set_target():
     db_session.commit()
     update_thermostat()
     return redirect(url_for('index'))
+
+@app.route('/schedule', methods=['GET' , 'POST'])
+def calendar():
+    if request.method == 'POST':
+        Schedule.query.delete()
+        i = 0
+        table = []
+        while 1:
+            line={}
+            for item in ["start_time", "end_time", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"]:
+                   value = request.form.get(item + "_" + str(i))
+                   if value and (item == "start_time" or item == "end_time"):
+                       time_struct = time.strptime(value,"%H:%M")
+                       line[item]=datetime.time(time_struct.tm_hour, time_struct.tm_min)
+                   else:
+                       line[item] = value
+            if line["start_time"]:
+                i += 1
+                schedule = Schedule(**line)
+                print schedule
+                db_session.add(schedule)
+                db_session.commit()
+            else:
+                break
+        print repr(table)
+    return render_template('schedule.html')
 
 fire = 0
 @app.route('/lcd')
