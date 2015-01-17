@@ -139,3 +139,44 @@ sudo cp init.d/one_wire_sensor /etc/init.d/
 sudo update-rc.d one_wire_sensor defaults
 sudo service one_wire_sensor start
 ```
+
+Enabling MRF24J40 ZigBee support on the Raspberry Pi
+----------------------------------------------------
+
+On a Linux system:
+
+Install rpi-build (https://github.com/notro/rpi-build/wiki):
+
+    sudo wget https://raw.githubusercontent.com/notro/rpi-build/master/rpi-build -O /usr/bin/rpi-build && sudo chmod +x /usr/bin/rpi-build
+    rpi-build
+
+Prepare a working directory and configure the kernel:
+
+    mkdir rpi_mrf
+    cd rpi_mrf
+    rpi-build use[stdlib] rpi_linux menuconfig
+
+Activate these options:
+
+```
+Networking support
+  Networking options
+    <M> IEEE Std 802.15.4
+      <M> 6lowpan support
+      <M> Generic IEEE
+Device Drivers
+  Network device support
+    <M> IEE 802.15.4 drivers
+      <M> Microchip MRF24J40 tranceiver driver
+```
+
+Build the kernel:
+
+    rpi-build use[stdlib] rpi_linux build
+
+Install it on your Raspberry Pi:
+
+    rpi-build use[stdlib] rpi_linux install SSHIP=<ip of the raspberry pi>
+
+Reboot the Raspberry and you should be able to load the mrf24j40 module (and add it to /etc/modules).
+
