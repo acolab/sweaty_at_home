@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, Response
 from flask import request
 from flask import abort, redirect, url_for
 from sqlalchemy import create_engine
@@ -154,7 +154,7 @@ def set_target():
     return redirect(url_for('index'))
 
 @app.route('/schedule', methods=['GET' , 'POST'])
-def calendar():
+def schedule():
     if request.method == 'POST':
         Schedule.query.delete()
         i = 0
@@ -205,6 +205,18 @@ def lcd():
 
 def root_dir():  # pragma: no cover
     return os.path.abspath(os.path.dirname(__file__))
+
+def get_file(filename):  # pragma: no cover
+    try:
+        src = os.path.join(root_dir(), filename)
+        # Figure out how flask returns static files
+        # Tried:
+        # - render_template
+        # - send_file
+        # This should not be so non-obvious
+        return open(src).read()
+    except IOError as exc:
+        return str(exc)
 
 @app.route('/', defaults={'path': ''})
 @app.route('/<path:path>')
