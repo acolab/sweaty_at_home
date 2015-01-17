@@ -1,0 +1,48 @@
+        <script src="/static/js/vendor/modernizr-2.6.2-respond-1.1.0.min.js"></script>
+        <script src="/static/js/vendor/jquery-1.11.1.min.js"></script>
+
+<body>
+  <form method=POST>
+  <table border="1" style="width:100%" id=inhere>
+    <thead>
+      <tr>
+        <td></td>
+        <td></td>
+        <td>Lundi</td>
+        <td>Mardi</td>
+        <td>Mercredi</td>
+        <td>Jeudi</td>
+        <td>Vendredi</td>
+        <td>Samedi</td>
+        <td>Dimanche</td>
+      </tr>
+      <tr>
+        <td>Début</td>
+        <td>Fin</td>
+      </tr>
+     </thead>
+     <tbody>
+     </tbody>
+  </table> 
+  <input type="submit" value="Envoyer">
+  </form>
+</body>
+<script>
+function AddTimeSlot() {
+    i = $("#inhere tbody tr").length
+    $("#inhere tbody").append('      <tr> \
+        <td><INPUT type="text" name="start_time_' + i + '"></td> \
+        <td><INPUT type="text" name="end_time_' + i + '"></td> \
+        <td><INPUT type="checkbox" name="monday_' + i + '" value="1"></td> \
+        <td><INPUT type="checkbox" name="tuesday_' + i + '" value="1"></td> \
+        <td><INPUT type="checkbox" name="wednesday_' + i + '" value="1"></td> \
+        <td><INPUT type="checkbox" name="thursday_' + i + '" value="1"></td> \
+        <td><INPUT type="checkbox" name="friday_' + i + '" value="1"></td> \
+        <td><INPUT type="checkbox" name="saturday_' + i + '" value="1"></td> \
+        <td><INPUT type="checkbox" name="sunday_' + i + '" value="1"></td> \
+        <td><button type="button" onclick="AddTimeSlot()">+</button></td> \
+      </tr>');
+
+} // function AddToolsFormField()
+AddTimeSlot()
+</script>
