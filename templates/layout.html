@@ -24,6 +24,12 @@
         {% endblock %}
     </head>
     <body>
+        <ul class="nav nav-pills">
+          <li role="presentation" class="active"><a href="/">Home</a></li>
+          <li role="presentation"><a href="/define-target">Settings</a></li>
+          <li role="presentation"><a href="/schedule">Schedule</a></li>
+        </ul>
+
         {% block content %}{% endblock %}
     </body>
     <footer>

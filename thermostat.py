@@ -152,15 +152,19 @@ def new_temperature():
     update_thermostat()
     return "Temperature saved: {temp}".format(temp=temperature.temperature)
 
-@app.route('/define-target')
+@app.route('/define-target', methods=['GET', 'POST'])
 def define_target():
     """Define high and low temperature target"""
     settings = Settings.query.first()
-    settings.high_target_temperature = request.args.get("high_target")
-    settings.low_target_temperature = request.args.get("low_target")
-    settings.spread = request.args.get("spread")
-    db_session.commit()
-    update_thermostat()
+    pp.pprint(settings)
+    if request.method == 'GET':
+        return render_template('settings.html', settings=settings)
+    if request.method == 'POST':
+        settings.high_target_temperature = request.form.get("high_target")
+        settings.low_target_temperature = request.form.get("low_target")
+        settings.spread = request.form.get("spread")
+        db_session.commit()
+        update_thermostat()
     return render_template('settings.html', settings=settings)
     
 
@@ -176,7 +180,7 @@ def schedule():
             for item in ["start_time", "end_time", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"]:
                    value = request.form.get(item + "_" + str(i))
                    if value and (item == "start_time" or item == "end_time"):
-                       time_struct = time.strptime(value,"%H:%M")
+                       time_struct = time.strptime(value,"%H:%M:%S")
                        line[item]=datetime.time(time_struct.tm_hour, time_struct.tm_min)
                    else:
                        line[item] = value
@@ -188,16 +192,11 @@ def schedule():
                 db_session.commit()
             else:
                 break
-        return render_template('schedule.html')
+        timetable = Schedule.query.order_by(Schedule.start_time).all()
+        schedule_daemon()
     if request.method == 'GET':
         timetable = Schedule.query.order_by(Schedule.start_time).all()
-        #pp.pprint(timetable)
-        # liste = []
-        # for line in timetable:
-            # tmp.append([ "checked" if line.item else "" for item in [monday, tuesday, wednesday, thursday, friday, saturday, sunday]])
-            # liste.append([line.start_time, line.end_time].append(liste[:]))
-        #pp.pprint(json.dumps(timetable))
-        return render_template('schedule.html', timetable = timetable)
+    return render_template('schedule.html', timetable = timetable)
 
 @app.route('/toggle')
 def toggle():
@@ -228,12 +227,13 @@ def schedule_daemon():
     if timetable:
         settings = Settings.query.first()
         set_high = False
-        schedule={{}}
-        for line in timetable:        
-            for day in [monday, tuesday, wednesday, thursday, friday, saturday, sunday]:
-                if line.day:
-                    schedule[str(day)][start_time].append(line.start_time)
-                    schedule[str(day)][end_time].append(line.end_time)
+        schedule={day:{item:[] for item in ["end_time", "start_time"]} for day in ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"]}
+        pp.pprint(schedule)
+        for line in timetable:   
+            for day in ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"]:
+                if vars(line)[day]:
+                    schedule[day]["start_time"].append(line.start_time)
+                    schedule[day]["end_time"].append(line.end_time)
 
         pp.pprint(schedule)
         now = datetime.datetime.now()
@@ -246,12 +246,12 @@ def schedule_daemon():
                  "saturday"]
         week_day = week[now.weekday()]
         
-        set_high = is_in_interval(dict[week_day][start_time], dict[week_day][end_time], now)
+        set_high = is_in_interval(schedule[week_day]["start_time"], schedule[week_day]["end_time"], now)
         
-        n = len(dict[week_day][end_time])
-        off_timeslot = [dict[week_day][end_time][i-1] for i in xrange(n)]
-        on_timeslot = dict[week_day][start_time]
-        on_timeslot[0] = time(24)
+        n = len(schedule[week_day]["end_time"])
+        off_timeslot = [schedule[week_day]["end_time"][i-1] for i in xrange(n)]
+        on_timeslot = schedule[week_day]["start_time"]
+        on_timeslot[0] = datetime.time(0)
         
         set_high = not is_in_interval(off_timeslot, on_timeslot, now)
         
@@ -270,14 +270,16 @@ def is_in_interval(start_list, end_list, now):
             if start <= now.time() <= end:
                 set_high = True
                 #define timer
-                t = threading.Timer(end-now.time(),schedule_daemon)
+                delta = end - now.time()
+                t = threading.Timer(delta.total_seconds,schedule_daemon)
                 t.start
                 return True
         else:
             if now.time() > end or now.time() < start:
                 set_high = True
                 #define timer
-                t = threading.Timer(end-now.time(),schedule_daemon)
+                delta = end - now.time()
+                t = threading.Timer(delta.total_seconds.total_seconds(),schedule_daemon)
                 t.start
                 return True
     return False
