@@ -21,8 +21,22 @@
                 </tr>
             </thead>
             <tbody>
-                <!--Placeholder for lines of the timetable-->
-                <script>AddTimeSlot()</script>
+                {% if timetable == [] %}
+                    <script>AddTimeSlot()</script>
+                {% else %}
+                    {% for instance in timetable %}
+                        <script>AddTimeSlot([ "{{(instance.start_time)}}", 
+                                              "{{instance.end_time}}",
+                                              {{'true' if instance.monday else 'false'}},
+                                              {{'true' if instance.tuesday else 'false'}},
+                                              {{'true' if instance.wednesday else 'false'}},
+                                              {{'true' if instance.thursday else 'false'}},
+                                              {{'true' if instance.friday else 'false'}},
+                                              {{'true' if instance.saturday else 'false'}},
+                                              {{'true' if instance.sunday else 'false'}}])
+                        </script>
+                    {% endfor%}
+                {% endif %}
             </tbody>
         </table>
         </div>

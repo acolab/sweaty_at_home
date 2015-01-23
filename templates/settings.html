@@ -1,0 +1,27 @@
+{% extends "layout.html" %}
+{% block head %}
+    {{ super ()}}
+        <style>
+            body {
+                padding-top: 50px;
+                padding-bottom: 20px;
+            }
+        </style>
+{% endblock %}
+{% block title %}Thermostat{% endblock %}
+{% block content %}
+    <div class="container">
+    <form class="form-inline" action="/set-target">
+        <div>
+            Temperature Jour cible: <input class="form-control" name="high_target" value="{{settings.high_target_temperature}}">
+        </div>
+        <div>
+            Temperature Nuit cible: <input class="form-control" name="low_target" value="{{settings.low_target_temperature}}">
+        </div>
+        <div>
+            Écart maximum: <input class="form-control" name="spread" value="{{settings.spread}}">
+        <div>
+            <input class="btn btn-default" type=submit>
+    </form>
+    </div>
+{% endblock %}

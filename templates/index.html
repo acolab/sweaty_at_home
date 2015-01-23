@@ -8,16 +8,17 @@
             }
         </style>
 {% endblock %}
-{% block title %}Thermosta{% endblock %}
+{% block title %}Thermostat{% endblock %}
 {% block content %}
     <div class="container">
-    <form class="form-inline" action="/set-target">
-        <p>
-            Temperature cible: <input class="form-control" name="target" value="{{settings.target_temperature}}">
-            Écart maximum: <input class="form-control" name="spread" value="{{settings.spread}}">
-            <input class="btn btn-default" type=submit>
-        </p>
-    </form>
+        <ul class="nav nav-pills">
+          <li role="presentation" class="active"><a href="/index">Home</a></li>
+          <li role="presentation"><a href="/define-target">Settings</a></li>
+          <li role="presentation"><a href="/schedule">Schedule</a></li>
+        </ul>
+        <button type="button" class="btn btn-primary {{ 'btn-danger' if heater.active() else '' }}" id="toggle_swicth" autocomplete="off">
+            {{ "Allumé" if heater.active() else "Éteint" }}
+        </button>
         <p>Chauffage : {{ "Allumé" if heater.active() else "Éteint" }}</p>
         <p>{{ count }} dernières temperatures</p>
         <table class="table">
@@ -26,4 +27,10 @@
             {% endfor %}
         </table>
     </div>
+<script>
+  $('#toggle_swicth').on('click', function () {
+    $(this).toggleClass("btn-danger")
+  })
+</script>
 {% endblock %}
+

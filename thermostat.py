@@ -11,6 +11,11 @@ import time
 from flask import render_template
 from random import randrange
 import os
+import pprint
+import threading
+import json
+
+pp = pprint.PrettyPrinter(indent=4)
 
 try:
     import pigpio
@@ -55,7 +60,9 @@ class Settings(Base):
     __tablename__ = 'settings'
 
     id = Column(Integer, primary_key=True)
-    target_temperature = Column(Float)
+    high_target_temperature = Column(Float, default = 20.0)
+    low_target_temperatue = Column(Float, default = 17.0)
+    target_temperature = Column(Float, default = 20.0)
     spread = Column(Float)
 
 if PI:
@@ -138,23 +145,28 @@ def index():
 
 @app.route('/new-temperature', methods=['POST'])
 def new_temperature():
+    """Triggered by Temperature Daemon. Record Temperature to database"""
     temperature = Temperature(temperature=request.form["value"], date=datetime.datetime.now())
     db_session.add(temperature)
     db_session.commit()
     update_thermostat()
     return "Temperature saved: {temp}".format(temp=temperature.temperature)
 
-@app.route('/set-target')
-def set_target():
+@app.route('/define-target')
+def define_target():
+    """Define high and low temperature target"""
     settings = Settings.query.first()
-    settings.target_temperature = request.args.get("target")
+    settings.high_target_temperature = request.args.get("high_target")
+    settings.low_target_temperature = request.args.get("low_target")
     settings.spread = request.args.get("spread")
     db_session.commit()
     update_thermostat()
-    return redirect(url_for('index'))
+    return render_template('settings.html', settings=settings)
+    
 
 @app.route('/schedule', methods=['GET' , 'POST'])
 def schedule():
+    """Define or display temperature scheduling"""
     if request.method == 'POST':
         Schedule.query.delete()
         i = 0
@@ -176,8 +188,100 @@ def schedule():
                 db_session.commit()
             else:
                 break
-        print repr(table)
-    return render_template('schedule.html')
+        return render_template('schedule.html')
+    if request.method == 'GET':
+        timetable = Schedule.query.order_by(Schedule.start_time).all()
+        #pp.pprint(timetable)
+        # liste = []
+        # for line in timetable:
+            # tmp.append([ "checked" if line.item else "" for item in [monday, tuesday, wednesday, thursday, friday, saturday, sunday]])
+            # liste.append([line.start_time, line.end_time].append(liste[:]))
+        #pp.pprint(json.dumps(timetable))
+        return render_template('schedule.html', timetable = timetable)
+
+@app.route('/toggle')
+def toggle():
+    """"Toggle temperature target HIGH->LOW or LOW->HIGH"""
+    settings = Settings.query.first()
+    target = settings.target_temperature
+    high_target = settings.high_target_temperature
+    low_target = settings.low_target_temperature
+    if target >= high_target:
+        settings.target_temperature = low_target
+        db_session.commit()
+    else:
+        settings.target_temperature = high_target
+        db_session.commit()
+    update_thermostat()
+    
+@app.route('/set-target')
+def set_target():
+    """Set target temperature"""
+    settings = Settings.query.first()
+    settings.target_temperature=request.form["value"]
+    db_session.commit()
+    update_thermostat()
+    
+def schedule_daemon():
+    """Set threading.Timer to follow defined schedule"""
+    timetable = Schedule.query.order_by(Schedule.start_time).all()
+    if timetable:
+        settings = Settings.query.first()
+        set_high = False
+        schedule={{}}
+        for line in timetable:        
+            for day in [monday, tuesday, wednesday, thursday, friday, saturday, sunday]:
+                if line.day:
+                    schedule[str(day)][start_time].append(line.start_time)
+                    schedule[str(day)][end_time].append(line.end_time)
+
+        pp.pprint(schedule)
+        now = datetime.datetime.now()
+        week = [ "sunday", 
+                 "monday",
+                 "tuesday",
+                 "wednesday",
+                 "thursday",
+                 "friday",
+                 "saturday"]
+        week_day = week[now.weekday()]
+        
+        set_high = is_in_interval(dict[week_day][start_time], dict[week_day][end_time], now)
+        
+        n = len(dict[week_day][end_time])
+        off_timeslot = [dict[week_day][end_time][i-1] for i in xrange(n)]
+        on_timeslot = dict[week_day][start_time]
+        on_timeslot[0] = time(24)
+        
+        set_high = not is_in_interval(off_timeslot, on_timeslot, now)
+        
+        if set_high:
+            settings.target_temperature = settings.high_target_temperature
+        else:
+            settings.target_temperature = settings.low_target_temperature
+    db_session.commit()
+    update_thermostat()
+        
+
+def is_in_interval(start_list, end_list, now):
+    """Check if now in timeslot define by list"""
+    for start, end in zip(start_list, end_list):
+        if start < end:
+            if start <= now.time() <= end:
+                set_high = True
+                #define timer
+                t = threading.Timer(end-now.time(),schedule_daemon)
+                t.start
+                return True
+        else:
+            if now.time() > end or now.time() < start:
+                set_high = True
+                #define timer
+                t = threading.Timer(end-now.time(),schedule_daemon)
+                t.start
+                return True
+    return False
+
 
 fire = 0
 @app.route('/lcd')
