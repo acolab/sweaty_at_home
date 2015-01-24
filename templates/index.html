@@ -1,18 +1,14 @@
 {% extends "layout.html" %}
 {% block head %}
     {{ super ()}}
-        <style>
-            body {
-                padding-top: 50px;
-                padding-bottom: 20px;
-            }
-        </style>
 {% endblock %}
 {% block title %}Thermostat{% endblock %}
 {% block content %}
-    <div class="container">
-        <button type="button" class="btn btn-primary {{ 'btn-danger' if heater.active() else '' }}" id="toggle_swicth" autocomplete="off">
-            {{ "Allumé" if heater.active() else "Éteint" }}
+    {{ super ()}}
+
+        <button type="button" class="btn btn-primary btn-lg {{ 'btn-danger' if heater.active() else '' }}" id="toggle_swicth" autocomplete="off">
+          <p class="toggle">Nuit</p>
+          <p class="toggle" style="display: none">Jour</p>
         </button>
         <p>Chauffage : {{ "Allumé" if heater.active() else "Éteint" }}</p>
         <p>{{ count }} dernières temperatures</p>
@@ -21,11 +17,11 @@
               <tr><td>{{temperature.date}}</td><td>{{temperature.temperature}}</td></tr>
             {% endfor %}
         </table>
-    </div>
 <script>
   $('#toggle_swicth').on('click', function () {
-    $(this).toggleClass("btn-danger")
-  })
+    $(this).toggleClass("btn-danger");
+    $('.toggle').toggle();
+  });
 </script>
 {% endblock %}
 
