@@ -61,7 +61,7 @@ class Settings(Base):
 
     id = Column(Integer, primary_key=True)
     high_target_temperature = Column(Float, default = 20.0)
-    low_target_temperatue = Column(Float, default = 17.0)
+    low_target_temperature = Column(Float, default = 17.0)
     target_temperature = Column(Float, default = 20.0)
     spread = Column(Float)
 
@@ -255,6 +255,8 @@ def schedule_daemon():
         
         set_high = not is_in_interval(off_timeslot, on_timeslot, now)
         
+        pp.pprint(vars(settings))
+        
         if set_high:
             settings.target_temperature = settings.high_target_temperature
         else:
@@ -270,16 +272,16 @@ def is_in_interval(start_list, end_list, now):
             if start <= now.time() <= end:
                 set_high = True
                 #define timer
-                delta = end - now.time()
-                t = threading.Timer(delta.total_seconds,schedule_daemon)
+                delta = (end.hour*3600+end.minute*60+end.second) - (now.time().hour*3600+now.time().minute*60+now.time().second)
+                t = threading.Timer(delta,schedule_daemon)
                 t.start
                 return True
         else:
             if now.time() > end or now.time() < start:
                 set_high = True
                 #define timer
-                delta = end - now.time()
-                t = threading.Timer(delta.total_seconds.total_seconds(),schedule_daemon)
+                delta = (end.hour*3600+end.minute*60+end.second) - (now.time().hour*3600+now.time().minute*60+now.time().second)
+                t = threading.Timer(delta,schedule_daemon)
                 t.start
                 return True
     return False

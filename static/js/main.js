@@ -5,8 +5,8 @@ function AddTimeSlot(value) {
     
     i = $("#inhere tbody tr").length
     $("#inhere tbody").append('      <tr> \
-        <td><INPUT type="text" name="start_time_' + i + '" value = "' + value[0] + '" placeholder="hh:mm"></td> \
-        <td><INPUT type="text" name="end_time_' + i + '" value = "' + value[1] + '" placeholder="hh:mm"></td> \
+        <td><INPUT type="text" name="start_time_' + i + '" value = "' + value[0] + '" placeholder="hh:mm:ss"></td> \
+        <td><INPUT type="text" name="end_time_' + i + '" value = "' + value[1] + '" placeholder="hh:mm:ss"></td> \
         <td><INPUT type="checkbox" name="monday_' + i + '" value="1" ' + (value[2]? "Checked":"") + '></td> \
         <td><INPUT type="checkbox" name="tuesday_' + i + '" value="1" ' + (value[3]? "Checked":"") + '></td> \
         <td><INPUT type="checkbox" name="wednesday_' + i + '" value="1" ' + (value[4]? "Checked":"") + '></td> \
