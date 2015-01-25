@@ -6,10 +6,11 @@
 {% block content %}
     {{ super ()}}
 
-        <button type="button" class="btn btn-primary btn-lg {{ 'btn-danger' if heater.active() else '' }}" id="toggle_swicth" autocomplete="off">
-          <p class="toggle">Nuit</p>
-          <p class="toggle" style="display: none">Jour</p>
+        <button type="button" class="btn btn-primary btn-lg {{ 'btn-danger' if settings.target_temperature >= settings.high_target_temperature else '' }}" id="toggle_swicth" autocomplete="off">
+          <p class="toggle">{{ 'Jour' if settings.target_temperature >= settings.high_target_temperature else 'Nuit' }}</p>
+          <p class="toggle" style="display: none">{{ 'Jour' if settings.target_temperature >= settings.high_target_temperature else 'Nuit' }}</p>
         </button>
+        <p>Temperature Cible : {{settings.target_temperature}}</p>
         <p>Chauffage : {{ "Allumé" if heater.active() else "Éteint" }}</p>
         <p>{{ count }} dernières temperatures</p>
         <table class="table">
@@ -21,6 +22,8 @@
   $('#toggle_swicth').on('click', function () {
     $(this).toggleClass("btn-danger");
     $('.toggle').toggle();
+    $.get( "/toggle" );
+    location.reload();
   });
 </script>
 {% endblock %}

@@ -205,13 +205,18 @@ def toggle():
     target = settings.target_temperature
     high_target = settings.high_target_temperature
     low_target = settings.low_target_temperature
+    print "Target :", target
+    print "Low Target :", low_target
+    print "High Target :", high_target
     if target >= high_target:
         settings.target_temperature = low_target
         db_session.commit()
     else:
         settings.target_temperature = high_target
         db_session.commit()
+    print "Target :", target
     update_thermostat()
+    return redirect(url_for('index'))
     
 @app.route('/set-target')
 def set_target():
