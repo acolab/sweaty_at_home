@@ -84,10 +84,11 @@ Functionnality
 - [x] Set hysteresis for Temperature regulation
 - [x] Display current temperature on LCD
 - [ ] Pilot boiler through relay
-- [ ] Pilot Electric heater through optotriac
+- [x] Pilot Electric heater through optotriac
 
 ### Web Interface
-- [ ] Set Temperature
+- [x] Set Temperature
+- [x] Define Schedule
 - [ ] Graph logged T°
 
 Install
